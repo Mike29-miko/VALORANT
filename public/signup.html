@@ -132,7 +132,7 @@
         </form>
 
         <div class="footer">
-            <p>Already have an account? <a href="login.html">Login here</a></p>
+            <p>Already have an account? <a href="index.html">Login here</a></p>
         </div>
     </div>
 
@@ -159,7 +159,7 @@
             .then(data => {
                 if (data.success) {
                     alert('Account created successfully! You can now log in.');
-                    window.location.href = 'login.html'; // Redirect to login page after successful registration
+                    window.location.href = 'index.html'; // Redirect to login page after successful registration
                 } else {
                     alert(data.message);
                 }
