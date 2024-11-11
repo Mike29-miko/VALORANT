@@ -127,41 +127,42 @@
             
             <label for="confirmPassword">Confirm Password:</label>
             <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
-
+    
             <button type="submit">Sign Up</button>
         </form>
-
+    
         <div class="footer">
             <p>Already have an account? <a href="index.html">Login here</a></p>
         </div>
     </div>
-
+    
     <script>
         document.getElementById('signupForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-
+            event.preventDefault(); // Prevent default form submission
+    
             var email = document.getElementById('email').value.trim();
             var password = document.getElementById('password').value.trim();
             var confirmPassword = document.getElementById('confirmPassword').value.trim();
-
-            // Client-side validation
+    
+            // Client-side validation: check if passwords match
             if (password !== confirmPassword) {
                 alert('Passwords do not match. Please try again.');
-                return;
+                return; // Stop further execution
             }
-
+    
+            // Send the form data to the server using Fetch API
             fetch(this.action, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email, password: password })
+                body: JSON.stringify({ email: email, password: password }) // Send email and password in request body
             })
-            .then(response => response.json())
+            .then(response => response.json()) // Parse JSON response from server
             .then(data => {
                 if (data.success) {
                     alert('Account created successfully! You can now log in.');
-                    window.location.href = 'index.html'; // Redirect to login page after successful registration
+                    window.location.href = 'index.html'; // Redirect to login page on success
                 } else {
-                    alert(data.message);
+                    alert(data.message || 'An error occurred. Please try again later.');
                 }
             })
             .catch(error => {
@@ -170,6 +171,7 @@
             });
         });
     </script>
+    
 
 </body>
 </html>

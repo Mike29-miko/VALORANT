@@ -454,21 +454,37 @@ const loginLimiter = rateLimit({
 // Sign Up Route
 app.post('/signup', async (req, res) => {
     const { email, password } = req.body;
+
     try {
-        if (!email || !password) return res.status(400).json({ success: false, message: 'Email and password are required.' });
-        if (!isValidPassword(password)) {
-            return res.status(400).json({ success: false, message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.' });
+        // Validate if email and password are provided
+        if (!email || !password) {
+            return res.status(400).json({ success: false, message: 'Email and password are required.' });
         }
 
-        const existingUser = await usersCollection.findOne({ emaildb: email });
-        if (existingUser) return res.status(400).json({ success: false, message: 'Email already registered.' });
+        // Validate password format
+        if (!isValidPassword(password)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.'
+            });
+        }
 
-        const hashedPassword = await hashPassword(password);
+        // Check if the email already exists in the database
+        const existingUser = await usersCollection.findOne({ emaildb: email });
+        if (existingUser) {
+            return res.status(400).json({ success: false, message: 'Email already registered.' });
+        }
+
+        // Hash the password before saving
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Insert the new user into the database
         await usersCollection.insertOne({ emaildb: email, password: hashedPassword });
 
-        res.json({ success: true, message: 'Account created successfully!' });
+        // Return success response
+        res.status(200).json({ success: true, message: 'Account created successfully!' });
     } catch (error) {
-        console.error('Error creating account:', error);
+        console.error('Error creating account:', error.message);
         res.status(500).json({ success: false, message: 'An internal server error occurred.' });
     }
 });
