@@ -15,6 +15,9 @@ const validator = require('validator');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Enable trust proxy
+app.set('trust proxy', true);
+
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -306,3 +309,4 @@ app.post('/logout', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
