@@ -1,4 +1,4 @@
-/*
+
 // server.js
 require('dotenv').config();
 const express = require('express');
@@ -105,7 +105,7 @@ function generateRandomString(length) {
 async function sendResetCodeEmail(email, resetCode) {
     const msg = {
         to: email,
-        from: 'adrianlacbao.10@gmail.com', // Replace with your verified SendGrid email
+        from: 'balicweyjohnwell@gmail.com', // Replace with your verified SendGrid email
         subject: 'Your Password Reset Code',
         text: `Your password reset code is: ${resetCode}`,
         html: `<p>Your password reset code is:</p><h3>${resetCode}</h3>`,
@@ -314,8 +314,15 @@ app.post('/logout', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-*/
 
+
+
+
+
+
+
+
+/*
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -451,41 +458,30 @@ const loginLimiter = rateLimit({
     message: 'Too many login attempts, please try again after 30 minutes.'
 });
 
-// Sign Up Route
-app.post('/signup', async (req, res) => {
-    const { email, password } = req.body;
-
+// Signup route
+app.post('/signup', (req, res) => {
     try {
-        // Validate if email and password are provided
-        if (!email || !password) {
-            return res.status(400).json({ success: false, message: 'Email and password are required.' });
+        const { email, password, confirmPassword } = req.body;
+
+        // Validate that password and confirmPassword match
+        if (password !== confirmPassword) {
+            return res.status(400).json({ success: false, message: 'Passwords do not match.' });
         }
 
-        // Validate password format
+        // Validate password using isValidPassword function
         if (!isValidPassword(password)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.'
-            });
+            return res.status(400).json({ success: false, message: 'Password must be at least 8 characters long and contain at least one number and one letter.' });
         }
 
-        // Check if the email already exists in the database
-        const existingUser = await usersCollection.findOne({ emaildb: email });
-        if (existingUser) {
-            return res.status(400).json({ success: false, message: 'Email already registered.' });
-        }
+        // Simulate storing user in database and setting session
+        req.session.email = email;
 
-        // Hash the password before saving
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // Send success response
+        res.status(201).json({ success: true, message: 'Account created successfully!' });
 
-        // Insert the new user into the database
-        await usersCollection.insertOne({ emaildb: email, password: hashedPassword });
-
-        // Return success response
-        res.status(200).json({ success: true, message: 'Account created successfully!' });
     } catch (error) {
-        console.error('Error creating account:', error.message);
-        res.status(500).json({ success: false, message: 'An internal server error occurred.' });
+        console.error('Error creating account:', error);
+        res.status(500).json({ success: false, message: 'Error creating account.' });
     }
 });
 
@@ -593,3 +589,4 @@ app.post('/reset-password', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+*/
