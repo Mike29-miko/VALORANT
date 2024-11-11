@@ -16,7 +16,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Enable trust proxy
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
