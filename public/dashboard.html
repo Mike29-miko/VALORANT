@@ -175,19 +175,19 @@
         
                 if (data.success) {
                     // Display the user's email in the dashboard and sidebar
-                    document.getElementById('userEmail').textContent = `Crush po kitaa rawr!`;  // Show the user's email here
+                    document.getElementById('userEmail').textContent = `Hello, Agent!`;  // Show the user's email here
                     document.getElementById('dashboardEmail').textContent = `Welcome, ${data.email}`;  // Use the actual email message
                 } else {
                     console.error('Failed to fetch user details:', data.message);
                     // Default fallback when user details are not available
-                    document.getElementById('userEmail').textContent = 'Hello, Agent!!';
-                    document.getElementById('dashboardEmail').textContent = 'You are not logged in.';
+                    document.getElementById('userEmail').textContent = 'Hello, Agent!';
+                    document.getElementById('dashboardEmail').textContent = `Welcome, ${data.email}`;
                 }
             } catch (error) {
                 console.error('Error fetching user details:', error);
                 // Default fallback if there's an error fetching user details
                 document.getElementById('userEmail').textContent = 'Hello, Agent!';
-                document.getElementById('dashboardEmail').textContent = 'You are not logged in.';
+                document.getElementById('dashboardEmail').textContent = `Welcome, ${data.email}`;
             }
         }
         
