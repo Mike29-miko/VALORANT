@@ -139,11 +139,11 @@
     <script>
         document.getElementById('signupForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            
+    
             var email = document.getElementById('email').value.trim();
             var password = document.getElementById('password').value.trim();
             var confirmPassword = document.getElementById('confirmPassword').value.trim();
-            
+    
             // Client-side validation
             if (password !== confirmPassword) {
                 alert('Passwords do not match. Please try again.');
@@ -170,6 +170,7 @@
             });
         });
     </script>
+    
     
     
 

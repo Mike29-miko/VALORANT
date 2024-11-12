@@ -124,67 +124,75 @@
     </style>
 </head>
 <body>
-<div class="background">
-    <form id="loginForm" class="form-container">
-        <header>Login</header>
-        <label for="email">Email</label>
-        <input type="email" placeholder="Email" id="email" name="email" required>
-        <div id="emailError" class="error-message"></div>
-        <label for="password">Password</label>
-        <div class="password-toggle">
-            <input type="password" placeholder="Password" id="password" name="password" required>
-            <span id="togglePassword" class="password-toggle-icon">👁</span>
-        </div>
-        <div id="passwordError" class="error-message"></div>
-        <button type="submit">Log In</button>
-        <div id="formError" class="error-message"></div>
-        <div class="footer">
-            <a href="forgot-password.html">Forgot Password?</a>
-            <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
-        </div>
-    </form>
-</div>
-
-<script>
-    // Handle form submission
-    document.getElementById('loginForm').addEventListener('submit', async function(event) {
-        event.preventDefault(); // Prevent default form submission
-
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const messageElement = document.getElementById('formError');
-
-        if (!email || !password) {
-            messageElement.textContent = 'Please enter both email and password.';
-            return;
-        }
-
-        try {
-            // Send login request to the server
-            const response = await fetch('/login', {  // Adjust URL if necessary
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password })
-            });
-
-            const data = await response.json();
-            console.log('Login response:', data);  // For debugging
-
-            if (response.ok) {
-                // Login successful, redirect to the dashboard
-                window.location.href = '/dashboard.html';  // Adjust URL if necessary
-            } else {
-                // Display error message
-                messageElement.textContent = data.message || 'Login failed. Please try again.';
+    <div class="background">
+        <form id="loginForm" class="form-container">
+            <header>Login</header>
+            <label for="email">Email</label>
+            <input type="email" placeholder="Email" id="email" name="email" required>
+            <div id="emailError" class="error-message"></div>
+            
+            <label for="password">Password</label>
+            <div class="password-toggle">
+                <input type="password" placeholder="Password" id="password" name="password" required>
+                <span id="togglePassword" class="password-toggle-icon">👁</span>
+            </div>
+            <div id="passwordError" class="error-message"></div>
+            
+            <button type="submit">Log In</button>
+            
+            <div id="formError" class="error-message"></div>
+            
+            <div class="footer">
+                <a href="forgot-password.html">Forgot Password?</a>
+                <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
+            </div>
+        </form>
+    </div>
+    <script>
+        // Handle form submission
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+    
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const messageElement = document.getElementById('formError');  // Assuming you're using this to display errors
+    
+            if (!email || !password) {
+                messageElement.textContent = 'Please enter both email and password.';
+                return;
             }
-        } catch (error) {
-            console.error('Error:', error);
-            messageElement.textContent = 'An error occurred. Please try again.';
-        }
-    });
-</script>
+    
+            try {
+                // Send login request to the server
+                const response = await fetch('/login', {  // Assuming '/login' is the correct route on your server
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+    
+                // Handle response
+                const data = await response.json();
+                console.log('Login response:', data);  // For debugging
+    
+                if (response.ok) {
+                    // Login successful, redirect to the dashboard
+                    window.location.href = '/dashboard.html';  // Redirect to a dashboard or home page after successful login
+                } else {
+                    // Display error message from server
+                    messageElement.textContent = data.message || 'Login failed. Please try again.';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                messageElement.textContent = 'An error occurred. Please try again.';
+            }
+        });
+    </script>
+    
+    
+    
+    
 
 </body>
 </html>

@@ -1,4 +1,4 @@
-
+/*
 // server.js
 require('dotenv').config();
 const express = require('express');
@@ -315,14 +315,8 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
+*/
 
-
-
-
-
-
-
-/*
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -426,9 +420,14 @@ const tokenSchema = new mongoose.Schema({
 const Token = mongoose.model('Token', tokenSchema);
 
 // Helper Functions
-async function hashPassword(password) {
+function hashPassword(password) {
     const saltRounds = 10;
-    return await bcrypt.hash(password, saltRounds);
+    return bcrypt.hashSync(password, saltRounds);
+}
+
+function isValidPassword(password) {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    return passwordRegex.test(password);
 }
 
 function generateRandomString(length) {
@@ -443,7 +442,7 @@ function generateRandomString(length) {
 async function sendResetCodeEmail(email, resetCode) {
     const msg = {
         to: email,
-        from: 'adrianlacbao.10@gmail.com', // Replace with your verified SendGrid email
+        from: 'balicweyjohnwell@gmail.com', // Replace with your verified SendGrid email
         subject: 'Your Password Reset Code',
         text: `Your password reset code is: ${resetCode}`,
         html: `<p>Your password reset code is:</p><h3>${resetCode}</h3>`,
@@ -458,81 +457,73 @@ const loginLimiter = rateLimit({
     message: 'Too many login attempts, please try again after 30 minutes.'
 });
 
-// Signup route
-app.post('/signup', (req, res) => {
-    try {
-        const { email, password, confirmPassword } = req.body;
-
-        // Validate that password and confirmPassword match
-        if (password !== confirmPassword) {
-            return res.status(400).json({ success: false, message: 'Passwords do not match.' });
-        }
-
-        // Validate password using isValidPassword function
-        if (!isValidPassword(password)) {
-            return res.status(400).json({ success: false, message: 'Password must be at least 8 characters long and contain at least one number and one letter.' });
-        }
-
-        // Simulate storing user in database and setting session
-        req.session.email = email;
-
-        // Send success response
-        res.status(201).json({ success: true, message: 'Account created successfully!' });
-
-    } catch (error) {
-        console.error('Error creating account:', error);
-        res.status(500).json({ success: false, message: 'Error creating account.' });
-    }
-});
+// Duplicate isValidPassword function (as per your request, this will not be removed)
+function isValidPassword(password) {
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+    return passwordRegex.test(password);
+}
 
 // Login Route
 app.post('/login', loginLimiter, async (req, res) => {
     const { email, password } = req.body;
     try {
+        // Validate email and password
         if (!email || !password) return res.status(400).json({ success: false, message: 'Email and password are required.' });
         if (!validator.isEmail(email)) return res.status(400).json({ success: false, message: 'Invalid email format.' });
 
-        const user = await usersCollection.findOne({ emaildb: email });
+        // Check if the user exists in the database
+        const user = await User.findOne({ emaildb: email });
         if (!user) return res.status(400).json({ success: false, message: 'Invalid email or password.' });
 
-        if (user.accountLockedUntil && user.accountLockedUntil > new Date()) {
-            const remainingTime = Math.ceil((user.accountLockedUntil - new Date()) / 60000);
-            return res.status(403).json({ success: false, message: `Account is locked. Try again in ${remainingTime} minutes.` });
-        }
-
+        // Compare passwords
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
             let invalidAttempts = (user.invalidLoginAttempts || 0) + 1;
             let updateFields = { invalidLoginAttempts: invalidAttempts };
 
+            // Lock account after 3 failed attempts
             if (invalidAttempts >= 3) {
-                updateFields.accountLockedUntil = new Date(Date.now() + 30 * 60 * 1000);
+                updateFields.accountLockedUntil = new Date(Date.now() + 30 * 60 * 1000); // Lock for 30 minutes
                 updateFields.invalidLoginAttempts = 0;
-                await usersCollection.updateOne({ _id: user._id }, { $set: updateFields });
+                await User.updateOne({ _id: user._id }, { $set: updateFields });
                 return res.status(403).json({ success: false, message: 'Account is locked due to multiple failed login attempts. Please try again after 30 minutes.' });
             } else {
-                await usersCollection.updateOne({ _id: user._id }, { $set: updateFields });
+                await User.updateOne({ _id: user._id }, { $set: updateFields });
                 return res.status(400).json({ success: false, message: 'Invalid email or password.' });
             }
         }
 
-        await usersCollection.updateOne(
+        // Reset invalid attempts and last login time
+        await User.updateOne(
             { _id: user._id },
             { $set: { invalidLoginAttempts: 0, accountLockedUntil: null, lastLoginTime: new Date() } }
         );
 
-        req.session.userId = user._id;
-        req.session.email = user.emaildb;
-        req.session.role = user.role;
+        // Store user info in session
+        req.session.user = { email: user.emaildb };
 
-        res.json({ success: true, message: 'Login successful!' });
+        // Send success response
+        res.json({ success: true, message: `Hello, ${user.emaildb}!` });
+
     } catch (error) {
-        console.error('Error during login:', error);
-        res.status(500).json({ success: false, message: 'Error during login.' });
+        console.error('Login error:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
-// Forgot Password Route
+// Route to get user details (for greeting message)
+app.get('/user-details', (req, res) => {
+    if (req.session.user) {
+        const userEmail = req.session.user.email;
+        res.json({ success: true, email: userEmail });  // Send back the email
+    } else {
+        res.json({ success: false, message: 'You are not logged in.' });
+    }
+});
+
+
+
+// Forgot Password Route (store token in MongoDB)
 app.post('/forgot-password', async (req, res) => {
     const { email } = req.body;
     if (!email) {
@@ -540,9 +531,64 @@ app.post('/forgot-password', async (req, res) => {
     }
 
     try {
-        let existingToken = await Token.findOne({ email });
+        // Check if the user exists in the User collection
+        const user = await User.findOne({ emaildb: email });
+        if (!user) {
+            return res.status(404).json({ message: 'No account with that email exists' });
+        }
+
+        // Generate a 6-character reset code
+        const resetCode = generateRandomString(6);
+
+        // Save the reset code and its expiration time in the User collection
+        user.resetKey = resetCode;
+        user.resetExpires = new Date(Date.now() + 3600000); // 1-hour expiry
+        await user.save();
+
+        // Generate a secure token to store in the Token collection
         const resetToken = generateRandomString(32);
 
+        // Check if there's already an existing token for this user in the Token collection
+        let existingToken = await Token.findOne({ email });
+        if (existingToken) {
+            // If the token exists, update it
+            existingToken.token = resetToken;
+            existingToken.createdAt = new Date();  // Update the creation time to reset the expiration
+            await existingToken.save();
+        } else {
+            // Otherwise, create a new token entry in the Token collection
+            const newToken = new Token({ email, token: resetToken });
+            await newToken.save();
+        }
+
+        // Send the reset code via email using SendGrid
+        await sendResetCodeEmail(email, resetCode);
+
+        // Respond to the client
+        res.json({ message: 'Password reset code sent', redirectUrl: '/reset-password.html' });
+    } catch (error) {
+        console.error('Error processing forgot-password request:', error);
+        res.status(500).json({ message: 'Error processing request' });
+    }
+});
+
+// Send Password Reset Route
+app.post('/send-password-reset', async (req, res) => {
+    const { email } = req.body;
+    try {
+        const user = await User.findOne({ emaildb: email });
+        if (!user) {
+            return res.status(404).json({ message: 'No account with that email exists' });
+        }
+
+        const resetCode = generateRandomString(6);
+        user.resetKey = resetCode;
+        user.resetExpires = new Date(Date.now() + 3600000); // 1-hour expiry
+        await user.save();
+
+        const resetToken = generateRandomString(32); // This token will be stored in the Token collection
+
+        let existingToken = await Token.findOne({ email });
         if (existingToken) {
             existingToken.token = resetToken;
             await existingToken.save();
@@ -551,10 +597,10 @@ app.post('/forgot-password', async (req, res) => {
             await newToken.save();
         }
 
-        await sendResetCodeEmail(email, resetToken);
-        res.status(200).json({ message: 'Password reset token generated and sent to email.' });
+        await sendResetCodeEmail(email, resetCode);
+        res.json({ message: 'Password reset code sent', redirectUrl: '/reset-password.html' });
     } catch (error) {
-        console.error('Error processing forgot-password request:', error);
+        console.error('Error processing request:', error);
         res.status(500).json({ message: 'Error processing request' });
     }
 });
@@ -578,15 +624,52 @@ app.post('/reset-password', async (req, res) => {
         user.resetExpires = null;
         await user.save();
 
-        res.json({ success: true, message: 'Password successfully reset.' });
+        res.json({ success: true, message: 'Your password has been successfully reset.' });
     } catch (error) {
         console.error('Error resetting password:', error);
-        res.status(500).json({ success: false, message: 'Error resetting password.' });
+        res.status(500).json({ success: false, message: 'Error resetting password' });
     }
 });
 
-// Start Server
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+// Sign Up Route
+app.post('/signup', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        if (!email || !password) return res.status(400).json({ success: false, message: 'Email and password are required.' });
+        if (!isValidPassword(password)) {
+            return res.status(400).json({ success: false, message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.' });
+        }
+
+        const existingUser = await usersCollection.findOne({ emaildb: email });
+        if (existingUser) return res.status(400).json({ success: false, message: 'Email already registered.' });
+
+        const hashedPassword = hashPassword(password);
+        await usersCollection.insertOne({ emaildb: email, password: hashedPassword });
+        
+        res.json({ success: true, message: 'Account created successfully!' });
+    } catch (error) {
+        console.error('Error creating account:', error);
+        res.status(500).json({ success: false, message: 'An internal server error occurred.' });
+    }
 });
-*/
+
+// Logout Route
+app.post('/logout', async (req, res) => {
+    try {
+        req.session.destroy((err) => {
+            if (err) {
+                console.error('Error during logout:', err);
+                return res.status(500).json({ success: false, message: 'Error during logout.' });
+            }
+            res.clearCookie('connect.sid');
+            res.json({ success: true, message: 'Logged out successfully.' });
+        });
+    } catch (error) {
+        console.error('Error during logout:', error);
+        res.status(500).json({ success: false, message: 'Error during logout.' });
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
