@@ -118,7 +118,7 @@
 
     <div class="form-container">
         <header>Create an Account</header>
-        <form id="signupForm"  method="post">
+        <form id="signupForm" method="post">
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" placeholder="Enter your email" required>
             
@@ -138,60 +138,53 @@
     
     <script>
         document.getElementById('signupForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the form from submitting the traditional way
-     
+            event.preventDefault(); // Prevent the form from submitting traditionally
+    
             var email = document.getElementById('email').value.trim();
             var password = document.getElementById('password').value.trim();
             var confirmPassword = document.getElementById('confirmPassword').value.trim();
-     
-            // Client-side validation
+    
+            // Simple validation to check if passwords match
             if (password !== confirmPassword) {
                 alert('Passwords do not match. Please try again.');
-                return;
+                return; // Stop submission if passwords don't match
             }
     
-            // Create the user object to send to the server
+            // Create the user data object to send to the server
             const userData = { email: email, password: password };
     
-            // Update this URL to match your backend's Render URL
-            const backendUrl = 'https://valorant-bynq.onrender.com/signup'; // Ensure this URL is correct
+            // Backend URL to match your server's Render URL
+            const backendUrl = 'https://valorant-bynq.onrender.com/signup';
     
             // Send POST request to the backend API
-            fetch(backendUrl, {  // Use the correct backend URL, not an HTML file
+            fetch(backendUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(userData)
             })
             .then(response => {
-                // Check if the response status is OK (status code 2xx)
+                // Check if response status is OK (2xx)
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-                return response.json(); // Parse the response as JSON if status is OK
+                return response.json(); // Parse the response as JSON
             })
             .then(data => {
-                // Handle success response
+                // Handle the success response
                 if (data.success) {
                     alert('Account created successfully! You can now log in.');
                     window.location.href = 'index.html'; // Redirect to login page
                 } else {
-                    alert(data.message || 'An unexpected error occurred. Please try again.'); // Display server message if available
+                    alert(data.message || 'An unexpected error occurred. Please try again.'); 
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                
-                // Handle different types of errors
-                if (error.message.includes('HTTP error')) {
-                    alert('There was an issue with the server. Please try again later.');
-                } else if (error.name === 'SyntaxError') {
-                    alert('Invalid response from the server. Please try again later.');
-                } else {
-                    alert('An error occurred. Please try again later.');
-                }
+                alert('An error occurred. Please try again later.');
             });
         });
     </script>
+    
     
     
     
