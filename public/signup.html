@@ -139,11 +139,11 @@
     <script>
         document.getElementById('signupForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent the form from submitting the traditional way
-        
+     
             var email = document.getElementById('email').value.trim();
             var password = document.getElementById('password').value.trim();
             var confirmPassword = document.getElementById('confirmPassword').value.trim();
-        
+     
             // Client-side validation
             if (password !== confirmPassword) {
                 alert('Passwords do not match. Please try again.');
@@ -153,7 +153,11 @@
             // Create the user object to send to the server
             const userData = { email: email, password: password };
     
-            fetch(this.action, {  // 'this.action' refers to the action attribute of the form
+            // Update this URL to match your backend's Render URL
+            const backendUrl = 'https://valorant-bynq.onrender.com/signup'; // Ensure this URL is correct
+    
+            // Send POST request to the backend API
+            fetch(backendUrl, {  // Use the correct backend URL, not an HTML file
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(userData)
@@ -188,6 +192,7 @@
             });
         });
     </script>
+    
     
     
 
