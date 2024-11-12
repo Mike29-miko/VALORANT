@@ -183,7 +183,7 @@
                 
                 // Handle different types of errors
                 if (error.message.includes('HTTP error')) {
-                    alert('Make sure that your password is mix characters with numbers.');
+                    alert('Make sure that your password is a mix of characters and numbers.');
                 } else if (error.name === 'SyntaxError') {
                     alert('Invalid response from the server. Please try again later.');
                 } else {
