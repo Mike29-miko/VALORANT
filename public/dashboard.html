@@ -119,6 +119,7 @@
         <a href="#">Agents</a>
         <a href="#">Settings</a>
         <a href="#" id="logoutLink">Logout</a> <!-- Logout link -->
+
     </div>
 
     <div class="content">
@@ -170,7 +171,7 @@
         
                 if (data.success) {
                     // Display the user's email in the dashboard and sidebar
-                    document.getElementById('userEmail').textContent = `Hello, Agent!`;  // Show the user's email here
+                    document.getElementById('userEmail').textContent = `Crush po kitaa rawr!`;  // Show the user's email here
                     document.getElementById('dashboardEmail').textContent = `Welcome, ${data.email}`;  // Use the actual email message
                 } else {
                     console.error('Failed to fetch user details:', data.message);
