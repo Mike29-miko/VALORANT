@@ -1,4 +1,4 @@
-<!--
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -220,8 +220,9 @@
     
 </body>
 </html>
--->
 
+
+<!--
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -420,7 +421,7 @@
 </head>
 <body>
     <div class="sidebar" id="sidebar">
-        <!-- Sidebar Welcome Section -->
+        
         <div class="sidebar-welcome">
             <h2><span id="userEmail">[Loading...]</span>!</h2>
         </div>
@@ -430,15 +431,15 @@
         <a href="#">Matches</a>
         <a href="#">Agents</a>
         <a href="#">Settings</a>
-        <a href="#" id="logoutLink">Logout</a> <!-- Logout link -->
-        <!-- Toggle Button to Minimize Sidebar -->
+        <a href="#" id="logoutLink">Logout</a> 
+       
         <button id="toggleSidebarBtn">></button>
     </div>
 
     <div class="content" id="content">
-        <!-- Header Section -->
+        
         <div class="header">
-            <h1><span id="dashboardEmail">[Loading...]</span>!</h1> <!-- Dynamic greeting -->
+            <h1><span id="dashboardEmail">[Loading...]</span>!</h1> 
         </div>
 
         <div class="stats">
@@ -466,7 +467,7 @@
         </div>
     </div>
 
-    <!-- Footer Section -->
+   
     <footer class="footer">
         <p>&copy; 2024 Valorant Dashboard. All Rights Reserved.</p>
     </footer>
@@ -517,7 +518,7 @@
             fetch('/logout', { method: 'POST', credentials: 'include' })
                 .then(response => {
                     if (response.ok) {
-                        window.location.href = '/login'; // Redirect to login page
+                        window.location.href = 'index.html'; // Redirect to login page
                     }
                 })
                 .catch(error => console.error('Error during logout:', error));
@@ -525,3 +526,5 @@
     </script>
 </body>
 </html>
+-->
+
