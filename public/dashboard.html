@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -112,7 +113,7 @@
 </head>
 <body>
     <div class="sidebar">
-        <!-- Sidebar Welcome Section -->
+     
         <div class="sidebar-welcome">
             <h2><span id="userEmail">[Loading...]</span>!</h2>
         </div>
@@ -122,14 +123,14 @@
         <a href="#">Matches</a>
         <a href="#">Agents</a>
         <a href="#">Settings</a>
-        <a href="#" id="logoutLink">Logout</a> <!-- Logout link -->
+        <a href="#" id="logoutLink">Logout</a> 
 
     </div>
 
     <div class="content">
-        <!-- Header Section -->
+        
         <div class="header">
-            <h1><span id="dashboardEmail">[Loading...]</span>!</h1> <!-- Dynamic greeting -->
+            <h1><span id="dashboardEmail">[Loading...]</span>!</h1> 
         </div>
 
         <div class="stats">
@@ -187,7 +188,7 @@
                 console.error('Error fetching user details:', error);
                 // Default fallback if there's an error fetching user details
                 document.getElementById('userEmail').textContent = 'Hello, Agent!';
-                document.getElementById('dashboardEmail').textContent = `Welcome, ${data.email}`;
+                document.getElementById('dashboardEmail').textContent = `Failed to get your info`;
             }
         }
         
@@ -217,5 +218,310 @@
     </script>
     
     
+</body>
+</html>
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valorant Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: row;
+            background-image: url("valorant3.jpg");
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            box-sizing: border-box;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: #2b2b2b;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100%;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar.minimized {
+            transform: translateX(-260px); /* Hide the sidebar when minimized */
+        }
+
+        /* Sidebar Content */
+        .sidebar h2 {
+            text-align: center;
+            color: #ff4655;
+            margin-bottom: 10px;
+        }
+
+        /* Sidebar Links */
+        .sidebar a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+            display: block;
+            transition: background 0.3s;
+            margin-bottom: 5px;
+        }
+
+        .sidebar a:hover {
+            background-color: #ff4655;
+        }
+
+        /* Welcome Section */
+        .sidebar-welcome {
+            margin-bottom: 30px;
+            text-align: center;
+            color: #ff4655;
+        }
+
+        /* Main Content */
+        .content {
+            margin-left: 250px; /* Ensures the content does not overlap the sidebar */
+            padding: 20px;
+            width: calc(100% - 250px); /* Adjust width based on sidebar size */
+            box-sizing: border-box;
+            transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+
+        .content.expanded {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        /* Header Section */
+        .header {
+            background-color: rgba(30, 30, 30, 0.9);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        /* Stats Section */
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        }
+
+        /* Stat Cards */
+        .stat-card {
+            background-color: rgba(30, 30, 30, 0.8);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            flex: 1 1 30%; /* Cards take up 30% width on medium screens */
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Game Mode Section */
+        .game-modes {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center the Game Modes section */
+        }
+
+        .game-mode {
+            background-color: rgba(30, 30, 30, 0.8);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            width: 100%;
+        }
+
+        /* Small screen adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%; /* Sidebar takes full width on smaller screens */
+                height: auto;
+            }
+
+            .content {
+                margin-left: 0; /* No sidebar margin on small screens */
+                padding: 15px;
+                width: 100%;
+            }
+
+            .stats {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .stat-card {
+                margin-bottom: 10px;
+                flex: 1 1 100%; /* Stat cards take 100% width on small screens */
+            }
+
+            .game-modes {
+                flex-direction: column;
+            }
+        }
+
+        /* Button Styles */
+        #toggleSidebarBtn {
+            background-color: #ff4655;
+            color: white;
+            padding: 5px 15px; /* Smaller width by adjusting padding */
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 12px; /* Smaller text */
+            margin-top: 10px;
+            width: auto; /* Button width is adjusted automatically by padding */
+            text-align: center;
+        }
+
+        /* Footer Styles */
+        .footer {
+            background-color: #2b2b2b;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        /* Small screen adjustments for footer */
+        @media (max-width: 768px) {
+            .footer {
+                font-size: 12px; /* Adjust text size for smaller screens */
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <!-- Sidebar Welcome Section -->
+        <div class="sidebar-welcome">
+            <h2><span id="userEmail">[Loading...]</span>!</h2>
+        </div>
+        <h2>Valorant Dashboard</h2>
+        <a href="#">Home</a>
+        <a href="#">Profile</a>
+        <a href="#">Matches</a>
+        <a href="#">Agents</a>
+        <a href="#">Settings</a>
+        <a href="#" id="logoutLink">Logout</a> <!-- Logout link -->
+        <!-- Toggle Button to Minimize Sidebar -->
+        <button id="toggleSidebarBtn">></button>
+    </div>
+
+    <div class="content" id="content">
+        <!-- Header Section -->
+        <div class="header">
+            <h1><span id="dashboardEmail">[Loading...]</span>!</h1> <!-- Dynamic greeting -->
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Kills</h3>
+                <p>25,355</p>
+            </div>
+            <div class="stat-card">
+                <h3>Deaths</h3>
+                <p>24,456</p>
+            </div>
+            <div class="stat-card">
+                <h3>K/D Ratio</h3>
+                <p>1.038</p>
+            </div>
+        </div>
+
+        <div class="game-modes">
+            <h2>Game Modes</h2>
+            <div class="game-mode">Unrated - 56% Win Rate</div>
+            <div class="game-mode">Competitive - 15% Win Rate</div>
+            <div class="game-mode">Spike Rush - 75% Win Rate</div>
+            <div class="game-mode">Deathmatch - 6% Win Rate</div>
+            <div class="game-mode">Escalation - 56% Win Rate</div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <p>&copy; 2024 Valorant Dashboard. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchUserDetails();
+        });
+
+        // Fetch the logged-in user's details
+        async function fetchUserDetails() {
+            try {
+                const response = await fetch('/user-details', { credentials: 'include' });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user details.');
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Display the user's email in the dashboard and sidebar
+                    document.getElementById('userEmail').textContent = `Hello, Agent!`;  // Show the user's email here
+                    document.getElementById('dashboardEmail').textContent = `Welcome, ${data.email}`;  // Use the actual email message
+                } else {
+                    console.error('Failed to fetch user details:', data.message);
+                    // Default fallback when user details are not available
+                    document.getElementById('userEmail').textContent = 'Hello, Agent!';
+                    document.getElementById('dashboardEmail').textContent = `Welcome, ${data.email}`;
+                }
+            } catch (error) {
+                console.error('Error fetching user details:', error);
+            }
+        }
+
+        // Toggle Sidebar Minimized/Expanded
+        document.getElementById('toggleSidebarBtn').addEventListener('click', function () {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+            const sidebarButton = document.getElementById('toggleSidebarBtn');
+            sidebar.classList.toggle('minimized');
+            content.classList.toggle('expanded');
+            sidebarButton.textContent = sidebar.classList.contains('minimized') ? '<' : '>';
+        });
+
+        // Logout function
+        document.getElementById('logoutLink').addEventListener('click', function () {
+            fetch('/logout', { method: 'POST', credentials: 'include' })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/login'; // Redirect to login page
+                    }
+                })
+                .catch(error => console.error('Error during logout:', error));
+        });
+    </script>
 </body>
 </html>
