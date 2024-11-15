@@ -1,4 +1,4 @@
-
+<!--
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -220,9 +220,9 @@
     
 </body>
 </html>
+-->
 
 
-<!--
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -476,55 +476,73 @@
         document.addEventListener('DOMContentLoaded', function () {
             fetchUserDetails();
         });
-
+        
         // Fetch the logged-in user's details
         async function fetchUserDetails() {
             try {
                 const response = await fetch('/user-details', { credentials: 'include' });
-
+        
                 if (!response.ok) {
                     throw new Error('Failed to fetch user details.');
                 }
-
+        
                 const data = await response.json();
-
+        
                 if (data.success) {
-                    // Display the user's email in the dashboard and sidebar
-                    document.getElementById('userEmail').textContent = `Hello, Agent!`;  // Show the user's email here
-                    document.getElementById('dashboardEmail').textContent = `Welcome, ${data.email}`;  // Use the actual email message
+                    // Use data.message for the greeting
+                    document.getElementById('userEmail').textContent = `Hello, Agent!`;
+                    document.getElementById('dashboardEmail').textContent = data.message; // Use the message directly
                 } else {
                     console.error('Failed to fetch user details:', data.message);
-                    // Default fallback when user details are not available
                     document.getElementById('userEmail').textContent = 'Hello, Agent!';
-                    document.getElementById('dashboardEmail').textContent = `Welcome, ${data.email}`;
+                    document.getElementById('dashboardEmail').textContent = 'Welcome, guest';
                 }
+                
             } catch (error) {
                 console.error('Error fetching user details:', error);
+                // Default fallback if there's an error fetching user details
+                document.getElementById('userEmail').textContent = 'Hello, Agent!';
+                document.getElementById('dashboardEmail').textContent = `Failed to get your info`;
+            }
+        }
+        
+        // Logout function
+        document.getElementById('logoutLink').addEventListener('click', function (event) {
+            event.preventDefault();
+            performLogout();
+        });
+        
+        async function performLogout() {
+            try {
+                const response = await fetch('/logout', {
+                    method: 'POST',
+                    credentials: 'include' // Ensure cookies are included in the request for session handling
+                });
+                if (response.ok) {
+                    // Redirect to login page after successful logout
+                    window.location.href = 'index.html';
+                } else {
+                    console.error('Logout failed');
+                }
+            } catch (error) {
+                console.error('Error during logout:', error);
             }
         }
 
-        // Toggle Sidebar Minimized/Expanded
-        document.getElementById('toggleSidebarBtn').addEventListener('click', function () {
-            const sidebar = document.getElementById('sidebar');
-            const content = document.getElementById('content');
-            const sidebarButton = document.getElementById('toggleSidebarBtn');
-            sidebar.classList.toggle('minimized');
-            content.classList.toggle('expanded');
-            sidebarButton.textContent = sidebar.classList.contains('minimized') ? '<' : '>';
-        });
+        
+       // Toggle Sidebar Minimized/Expanded
+document.getElementById('toggleSidebarBtn').addEventListener('click', function () {
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('content');
+    const sidebarButton = document.getElementById('toggleSidebarBtn');
+    sidebar.classList.toggle('minimized');
+    content.classList.toggle('expanded');
+    sidebarButton.textContent = sidebar.classList.contains('minimized') ? '<' : '>';
+});
 
-        // Logout function
-        document.getElementById('logoutLink').addEventListener('click', function () {
-            fetch('/logout', { method: 'POST', credentials: 'include' })
-                .then(response => {
-                    if (response.ok) {
-                        window.location.href = 'index.html'; // Redirect to login page
-                    }
-                })
-                .catch(error => console.error('Error during logout:', error));
-        });
     </script>
+    
 </body>
 </html>
--->
+
 

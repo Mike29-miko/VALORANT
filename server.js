@@ -293,7 +293,7 @@ app.post('/login', loginLimiter, async (req, res) => {
 app.get('/user-details', (req, res) => {
     if (req.session.user) {
         const userEmail = req.session.user.email;
-        res.json({ success: true, message: `Hello, ${userEmail}!` });
+        res.json({ success: true, email: userEmail, message: `Hello, ${userEmail}!` });
     } else {
         res.json({ success: false, message: 'You are not logged in.' });
     }
